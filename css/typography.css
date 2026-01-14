@@ -1,0 +1,29 @@
+@font-face {
+    font-family: 'Unbounded';
+    src: url('../assets/fonts/Unbounded/Unbounded-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+.base_text {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 16px;
+    font-weight: normal;
+    font-style: normal;
+}
+
+.h1_text {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 48px;
+    font-weight: normal;
+    font-style: normal;
+    color: var(--color-text-light);
+}
+
+.h3_text {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 32px;
+    font-weight: normal;
+    font-style: normal;
+    color: var(--color-text-light);
+}
