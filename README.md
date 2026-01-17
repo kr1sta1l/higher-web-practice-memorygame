@@ -7,5 +7,5 @@
 
 ## Ссылки
 
-- **Репозиторий GitHub**: git@github.com:kr1sta1l/higher-web-practice-memorygame.git
-- **Опубликованная версия**: 
+- **Репозиторий GitHub**: https://github.com/kr1sta1l/higher-web-practice-memorygame.git
+- **Опубликованная версия**: https://kr1sta1l.github.io/higher-web-practice-memorygame/
