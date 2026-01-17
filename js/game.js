@@ -49,11 +49,53 @@ class MemoryGame {
         this.attemptsDisplay = document.querySelector('.attempts_count');
         this.timeDisplay = document.querySelector('.time_count');
         this.pairsDisplay = document.querySelector('.pairs_count');
+        this.modeCounter = document.getElementById('mode-counter');
+        this.startButton = document.getElementById('start-game');
         
         if (!this.cardsContainer) {
-            console.error('Cards container not found');
             return;
         }
+        
+        this.updateMainMenuCounters();
+        this.updateStartButton();
+    }
+    
+    updateMainMenuCounters() {
+        if (!this.modeCounter) return;
+        
+        const gameMode = this.getSelectedGameMode();
+        const difficulty = this.getSelectedDifficulty();
+        const config = GAME_CONFIG[difficulty];
+        
+        if (gameMode === 'attempts') {
+            this.modeCounter.textContent = `Попыток: ${config.attempts}`;
+            this.modeCounter.style.display = 'block';
+        } else if (gameMode === 'time') {
+            const minutes = Math.floor(config.time / 60);
+            const seconds = config.time % 60;
+            this.modeCounter.textContent = `Время: ${minutes}:${seconds.toString().padStart(2, '0')}`;
+            this.modeCounter.style.display = 'block';
+        } else {
+            this.modeCounter.style.display = 'none';
+        }
+    }
+    
+    getSelectedDifficulty() {
+        const difficultySelector = document.querySelector('[data-selector="difficulty"]');
+        if (!difficultySelector) return 'easy';
+        
+        const difficultyValue = difficultySelector.querySelector('.list_selector-value').textContent;
+        
+        if (difficultyValue === 'Средний') return 'medium';
+        if (difficultyValue === 'Сложный') return 'hard';
+        return 'easy';
+    }
+    
+    updateStartButton() {
+        if (!this.startButton) return;
+        const gameMode = this.getSelectedGameMode();
+        const difficulty = this.getSelectedDifficulty();
+        this.startButton.disabled = !gameMode || !difficulty;
     }
     
     startGame(mode, difficulty) {
@@ -62,9 +104,9 @@ class MemoryGame {
         this.matchedPairs = 0;
         this.attempts = 0;
         this.flippedCards = [];
-        this.isGameActive = true;
+        this.isGameActive = false;
         this.canFlip = true;
-        this.startTime = Date.now();
+        this.startTime = null;
 
         const config = GAME_CONFIG[difficulty];
         this.totalPairs = config.pairs;
@@ -79,11 +121,9 @@ class MemoryGame {
         } else if (mode === 'time') {
             this.timeLeft = config.time;
             this.maxAttempts = null;
-            this.startTimer();
         } else {
             this.timeLeft = null;
             this.maxAttempts = null;
-            this.startCommonTimer();
         }
         
         this.generateCards();
@@ -95,11 +135,11 @@ class MemoryGame {
         const config = GAME_CONFIG[this.difficulty];
         const cardValues = [];
         
-        for (let i = 0; i < config.pairs; i++) {
-            const emoji = CARD_EMOJIS[i];
+        const selectedEmojis = CARD_EMOJIS.slice(0, config.pairs);
+        selectedEmojis.forEach(emoji => {
             cardValues.push(emoji);
             cardValues.push(emoji);
-        }
+        });
         
         this.shuffleArray(cardValues);
         
@@ -115,11 +155,24 @@ class MemoryGame {
     }
     
     handleCardClick(card) {
-        if (!this.isGameActive || !this.canFlip) return;
+        if (!this.canFlip) return;
         
         if (!card.canFlip()) return;
         
         if (this.flippedCards.length >= 2) return;
+        
+        if (!this.isGameActive) {
+            this.isGameActive = true;
+            this.startTime = Date.now();
+            
+            if (this.gameMode === 'attempts') {
+                this.startCommonTimer();
+            } else if (this.gameMode === 'time') {
+                this.startTimer();
+            } else {
+                this.startCommonTimer();
+            }
+        }
         
         card.flip();
         this.flippedCards.push(card);
@@ -219,7 +272,7 @@ class MemoryGame {
                 const minutes = Math.floor(this.timeLeft / 60);
                 const seconds = this.timeLeft % 60;
                 this.timeDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
-            } else if (this.gameMode === 'common' && this.startTime) {
+            } else if ((this.gameMode === 'common' || this.gameMode === 'attempts') && this.startTime) {
                 const elapsed = this.calculateGameTime();
                 const minutes = Math.floor(elapsed / 60);
                 const seconds = elapsed % 60;
@@ -307,8 +360,11 @@ class MemoryGame {
         
         const allResults = this.getAllResults();
         const selectedMode = this.getSelectedGameMode();
+        const selectedDifficulty = this.getSelectedDifficulty();
         
-        let filteredResults = allResults.filter(result => result.mode === selectedMode);
+        let filteredResults = allResults.filter(result => 
+            result.mode === selectedMode && result.difficulty === selectedDifficulty
+        );
         
         if (filteredResults.length === 0) {
             const noResultsDiv = document.createElement('div');
@@ -331,11 +387,6 @@ class MemoryGame {
                 if (a.time !== b.time) {
                     return a.time - b.time;
                 }
-            }
-            
-            const diffOrder = { 'easy': 0, 'medium': 1, 'hard': 2 };
-            if (a.difficulty !== b.difficulty) {
-                return diffOrder[a.difficulty] - diffOrder[b.difficulty];
             }
             
             return new Date(b.date) - new Date(a.date);
@@ -375,7 +426,7 @@ class MemoryGame {
             const resultItem = template.content.cloneNode(true);
             
             resultItem.querySelector('.result_date').textContent = dateStr;
-            resultItem.querySelector('.result_mode').textContent = `${modeNames[result.mode]} • ${difficultyNames[result.difficulty]}`;
+            resultItem.querySelector('.result_mode').textContent = modeNames[result.mode];
             
             const timeSpan = resultItem.querySelector('.result_time');
             timeSpan.textContent = result.mode === 'time' 
@@ -431,10 +482,22 @@ class MemoryGame {
             let details = `Найдено пар: ${result.pairs} / ${result.totalPairs}\n`;
             details += `Попыток: ${result.attempts}\n`;
             
+            const minutes = Math.floor(result.time / 60);
+            const seconds = result.time % 60;
+            const timeStr = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            
             if (result.mode === 'time') {
-                const minutes = Math.floor(result.time / 1000 / 60);
-                const seconds = Math.floor((result.time / 1000) % 60);
-                details += `Время: ${minutes}:${seconds.toString().padStart(2, '0')}`;
+                details += `Осталось времени: ${timeStr}\n`;
+            } else {
+                details += `Время: ${timeStr}\n`;
+            }
+            
+            const bestTime = this.getBestTime(result.mode, result.difficulty);
+            if (bestTime !== null) {
+                const bestMinutes = Math.floor(bestTime / 60);
+                const bestSeconds = bestTime % 60;
+                const bestTimeStr = `${bestMinutes}:${bestSeconds.toString().padStart(2, '0')}`;
+                details += `Лучшее время: ${bestTimeStr}`;
             }
             
             resultDetails.textContent = details;
@@ -444,8 +507,31 @@ class MemoryGame {
         modal.classList.add('active');
     }
     
+    getBestTime(mode, difficulty) {
+        const allResults = this.getAllResults();
+        const filteredResults = allResults.filter(result => 
+            result.mode === mode && 
+            result.difficulty === difficulty && 
+            result.win
+        );
+        
+        if (filteredResults.length === 0) {
+            return null;
+        }
+        
+        if (mode === 'time') {
+            return Math.max(...filteredResults.map(result => result.time));
+        } else {
+            return Math.min(...filteredResults.map(result => result.time));
+        }
+    }
+    
     shuffleArray(array) {
+        const indices = [];
         for (let i = array.length - 1; i > 0; i--) {
+            indices.push(i);
+        }
+        for (const i of indices) {
             const j = Math.floor(Math.random() * (i + 1));
             [array[i], array[j]] = [array[j], array[i]];
         }
@@ -482,6 +568,19 @@ document.addEventListener('DOMContentLoaded', function() {
     if (gameModeSelector) {
         gameModeSelector.addEventListener('change', function() {
             if (gameInstance) {
+                gameInstance.updateMainMenuCounters();
+                gameInstance.updateStartButton();
+                gameInstance.displayResults();
+            }
+        });
+    }
+    
+    const difficultySelector = document.querySelector('[data-selector="difficulty"]');
+    if (difficultySelector) {
+        difficultySelector.addEventListener('change', function() {
+            if (gameInstance) {
+                gameInstance.updateMainMenuCounters();
+                gameInstance.updateStartButton();
                 gameInstance.displayResults();
             }
         });

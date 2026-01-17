@@ -9,7 +9,6 @@
     <link
       rel="stylesheet"
       href="./css/normalize.css" />
-    <link rel="stylesheet" href="./css/normalize.css" />
     <link rel="stylesheet" href="./css/typography.css" />
     <link rel="stylesheet" href="./css/common.css" />
     <link rel="stylesheet" href="./css/variables.css" />
@@ -31,16 +30,19 @@
         <div class="settings_container">
           <div class="game-mode-select settings_container_item">
             <h3 class="h3_text">Режим игры</h3>
-            <div class="list_selector_wrapper">
-              <div class="list_selector" data-selector="game-mode">
-                <span class="list_selector-value base_text">Обычный</span>
-                <span class="list_selector_arrow base_text">▼</span>
+            <div class="selector_with_counter">
+              <div class="list_selector_wrapper">
+                <div class="list_selector" data-selector="game-mode">
+                  <span class="list_selector-value base_text">Обычный</span>
+                  <span class="list_selector_arrow base_text">▼</span>
+                </div>
+                <div class="list_selector_dropdown" data-dropdown="game-mode">
+                  <div class="list_selector_option base_text" data-value="common">Обычный</div>
+                  <div class="list_selector_option base_text" data-value="attempts">На попытки</div>
+                  <div class="list_selector_option base_text" data-value="time">На время</div>
+                </div>
               </div>
-              <div class="list_selector_dropdown" data-dropdown="game-mode">
-                <div class="list_selector_option base_text" data-value="common">Обычный</div>
-                <div class="list_selector_option base_text" data-value="attempts">На попытки</div>
-                <div class="list_selector_option base_text" data-value="time">На время</div>
-              </div>
+              <div class="mode_counter base_text" id="mode-counter" style="display: none;"></div>
             </div>
           </div>
           <div class="difficulty-select settings_container_item">

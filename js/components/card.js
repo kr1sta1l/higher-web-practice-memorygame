@@ -12,7 +12,6 @@ export class Card {
     createElement() {
         const template = document.getElementById('card-template');
         if (!template) {
-            console.error('Card template not found');
             return;
         }
         const cardElement = template.content.cloneNode(true).querySelector('.game_card');

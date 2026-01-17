@@ -2,4 +2,11 @@ header {
     display: flex;
     justify-content: center;
     align-items: center;
+    padding: 15px;
+}
+
+@media (max-width: 480px) {
+    header {
+        padding: 10px;
+    }
 }

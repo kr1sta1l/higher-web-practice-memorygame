@@ -7,23 +7,51 @@
 
 .base_text {
     font-family: 'Unbounded', sans-serif;
-    font-size: 16px;
     font-weight: normal;
+    font-size: 16px;
     font-style: normal;
 }
 
 .h1_text {
-    font-family: 'Unbounded', sans-serif;
-    font-size: 48px;
-    font-weight: normal;
-    font-style: normal;
     color: var(--color-text-light);
+    font-family: 'Unbounded', sans-serif;
+    font-weight: normal;
+    font-size: 48px;
+    font-style: normal;
 }
 
 .h3_text {
-    font-family: 'Unbounded', sans-serif;
-    font-size: 32px;
-    font-weight: normal;
-    font-style: normal;
     color: var(--color-text-light);
+    font-family: 'Unbounded', sans-serif;
+    font-weight: normal;
+    font-size: 32px;
+    font-style: normal;
+}
+
+@media (max-width: 768px) {
+    .h1_text {
+        font-size: 36px;
+    }
+    
+    .h3_text {
+        font-size: 24px;
+    }
+    
+    .base_text {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .h1_text {
+        font-size: 28px;
+    }
+    
+    .h3_text {
+        font-size: 20px;
+    }
+    
+    .base_text {
+        font-size: 12px;
+    }
 }

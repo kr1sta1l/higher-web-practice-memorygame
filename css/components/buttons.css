@@ -1,21 +1,35 @@
 .base_button {
-    background-color: var(--color-accent-gold);
-    color: var(--color-text-primary);
     border: 2px solid var(--color-border-gold);
     border-radius: 12px;
     padding: 12px 24px;
-    cursor: pointer;
     outline: none;
+    color: var(--color-text-primary);
+    background-color: var(--color-accent-gold);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: pointer;
 }
 
 
-.base_button:hover {
-    background-color: var(--color-hover);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+@media (hover: hover) and (pointer: fine) {
+    .base_button:hover {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        background-color: var(--color-hover);
+        transform: translateY(-2px);
+    }
 }
 
 .base_button:active {
     background-color: var(--color-accent-gold);
+}
+
+.base_button {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+}
+
+@media (max-width: 480px) {
+    .base_button {
+        padding: 10px 20px;
+        font-size: 14px;
+    }
 }
