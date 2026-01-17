@@ -1,0 +1,18 @@
+:root {
+    --color-bg-primary: #2c4228;
+    --color-bg-light: #f0f4f7;
+    
+    --color-accent-gold: #fac57d;
+    --color-accent-green: #344d2f;
+    
+    --color-card-back: #c8beb9;
+    
+    --color-text-primary: #344d2f;
+    --color-text-light: #FFFFFF;
+    --color-text-on-gold: #FFFFFF;
+    
+    --color-match: #a81817;
+    --color-hover: #fac57d;
+    --color-border-gold: #fac57d;
+    --color-border-red: #a81817;
+}

@@ -1,18 +1,132 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
   <head>
     <meta charset="UTF-8" />
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1.0" />
-    <title>Игра память</title>
+    <title>Поиск подарков</title>
     <link
       rel="stylesheet"
-      href="./style.css" />
+      href="./css/normalize.css" />
+    <link rel="stylesheet" href="./css/typography.css" />
+    <link rel="stylesheet" href="./css/common.css" />
+    <link rel="stylesheet" href="./css/variables.css" />
+    <link rel="stylesheet" href="./css/components/header.css" />
+    <link rel="stylesheet" href="./css/components/list_selector.css" />
+    <link rel="stylesheet" href="./css/pages/main_menu.css" />
+    <link rel="stylesheet" href="./css/pages/game.css" />
+    <link rel="stylesheet" href="./css/components/buttons.css" />
+    <link rel="stylesheet" href="./css/components/modal.css" />
+    <script src="./js/components/list_selector.js" defer></script>
+    <script type="module" src="./js/game.js" defer></script>
   </head>
-  <body class="body">
-    <script
-      type="text/javascript"
-      src="./game.js"></script>
+  <body>
+    <header>
+      <h1 class="h1_text">Поиск подарков</h1>
+    </header>
+    <main>
+      <div class="content_container main_menu_container">
+        <div class="settings_container">
+          <div class="game-mode-select settings_container_item">
+            <h3 class="h3_text">Режим игры</h3>
+            <div class="selector_with_counter">
+              <div class="list_selector_wrapper">
+                <div class="list_selector" data-selector="game-mode">
+                  <span class="list_selector-value base_text">Обычный</span>
+                  <span class="list_selector_arrow base_text">▼</span>
+                </div>
+                <div class="list_selector_dropdown" data-dropdown="game-mode">
+                  <div class="list_selector_option base_text" data-value="common">Обычный</div>
+                  <div class="list_selector_option base_text" data-value="attempts">На попытки</div>
+                  <div class="list_selector_option base_text" data-value="time">На время</div>
+                </div>
+              </div>
+              <div class="mode_counter base_text" id="mode-counter" style="display: none;"></div>
+            </div>
+          </div>
+          <div class="difficulty-select settings_container_item">
+            <h3 class="h3_text">Уровень сложности</h3>
+            <div class="list_selector_wrapper">
+              <div class="list_selector" data-selector="difficulty">
+                <span class="list_selector-value base_text">Легкий</span>
+                <span class="list_selector_arrow base_text">▼</span>
+              </div>
+              <div class="list_selector_dropdown" data-dropdown="difficulty">
+                <div class="list_selector_option base_text" data-value="easy">Легкий</div>
+                <div class="list_selector_option base_text" data-value="medium">Средний</div>
+                <div class="list_selector_option base_text" data-value="hard">Сложный</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="start_game_container">
+          <button id="start-game" class="base_text base_button">Начать игру</button>
+        </div>
+        <div class="results_container">
+          <h3 class="h3_text">Лучшие результаты</h3>
+          <div class="results_list" id="results-list">
+            <div class="no_results base_text">Пока нет результатов</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Игровая область -->
+      <div class="content_container game_container">
+        <div class="game_stats">
+          <div class="stat_item">
+            <span class="stat_label base_text">Найдено пар</span>
+            <span class="stat_value pairs_count base_text">0 / 0</span>
+          </div>
+          <div class="stat_item">
+            <span class="stat_label base_text">Попытки</span>
+            <span class="stat_value attempts_count base_text">0</span>
+          </div>
+          <div class="stat_item">
+            <span class="stat_label base_text">Время</span>
+            <span class="stat_value time_count base_text">—</span>
+          </div>
+        </div>
+        <div class="game_controls">
+          <button id="restart-game" class="base_text base_button">Сначала</button>
+          <button id="change-mode" class="base_text base_button">Сменить режим</button>
+        </div>
+        <div class="cards_grid"></div>
+      </div>
+
+      <template id="card-template">
+        <div class="game_card">
+          <div class="card_front"></div>
+          <div class="card_back"></div>
+        </div>
+      </template>
+
+      <template id="result-item-template">
+        <div class="result_item">
+          <div class="result_header">
+            <span class="result_icon">✅</span>
+            <span class="result_date base_text"></span>
+          </div>
+          <div class="result_info base_text">
+            <div class="result_mode"></div>
+            <div class="result_stats">
+              <span class="result_time"></span>
+              <span class="result_attempts"></span>
+            </div>
+          </div>
+        </div>
+      </template>
+    </main>
+
+    <!-- Модальное окно результатов -->
+    <div class="modal_overlay">
+      <div class="result_modal">
+        <h2 class="result_text base_text">Игра окончена</h2>
+        <div class="result_details base_text"></div>
+        <div class="modal_actions">
+          <button class="modal_button base_text modal_close">Закрыть</button>
+        </div>
+      </div>
+    </div>
   </body>
 </html>
