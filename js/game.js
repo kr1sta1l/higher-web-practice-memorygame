@@ -35,6 +35,8 @@ class MemoryGame {
         this.timer = null;
         this.gameMode = 'common';
         this.difficulty = 'easy';
+        this.userHasSelectedMode = false;
+        this.userHasSelectedDifficulty = false;
         this.isGameActive = false;
         this.canFlip = true;
         this.startTime = null;
@@ -56,6 +58,12 @@ class MemoryGame {
             return;
         }
         
+        const modeSpan = document.querySelector('[data-selector="game-mode"] .list_selector-value');
+        const diffSpan = document.querySelector('[data-selector="difficulty"] .list_selector-value');
+        if (modeSpan && modeSpan.textContent !== '---' && diffSpan && diffSpan.textContent !== '---') {
+            this.userHasSelectedMode = true;
+            this.userHasSelectedDifficulty = true;
+        }
         this.updateMainMenuCounters();
         this.updateStartButton();
     }
@@ -93,9 +101,7 @@ class MemoryGame {
     
     updateStartButton() {
         if (!this.startButton) return;
-        const gameMode = this.getSelectedGameMode();
-        const difficulty = this.getSelectedDifficulty();
-        this.startButton.disabled = !gameMode || !difficulty;
+        this.startButton.disabled = !(this.userHasSelectedMode && this.userHasSelectedDifficulty);
     }
     
     startGame(mode, difficulty) {
@@ -181,7 +187,7 @@ class MemoryGame {
             this.canFlip = false;
             setTimeout(() => {
                 this.checkMatch();
-            }, 1000);
+            }, 500);
         }
     }
     
@@ -290,18 +296,12 @@ class MemoryGame {
             this.timer = null;
         }
         
-        const gameTime = this.calculateGameTime();
-        let timeToSave = gameTime;
-        if (this.gameMode === 'time' && isWin && this.timeLeft !== null) {
-            timeToSave = this.timeLeft;
-        }
-        
         const result = {
             win: isWin,
             mode: this.gameMode,
             difficulty: this.difficulty,
             attempts: this.attempts,
-            time: timeToSave,
+            time: this.gameMode === 'time' ? (this.timeLeft ?? 0) : this.calculateGameTime(),
             pairs: this.matchedPairs,
             totalPairs: this.totalPairs,
             date: new Date().toISOString()
@@ -371,6 +371,7 @@ class MemoryGame {
             noResultsDiv.className = 'no_results base_text';
             noResultsDiv.textContent = 'Пока нет результатов';
             resultsList.appendChild(noResultsDiv);
+            this.displayBestResultsPerMode();
             return;
         }
         
@@ -398,12 +399,6 @@ class MemoryGame {
             'common': 'Обычный',
             'attempts': 'На попытки',
             'time': 'На время'
-        };
-        
-        const difficultyNames = {
-            'easy': 'Легкий',
-            'medium': 'Средний',
-            'hard': 'Сложный'
         };
         
         const template = document.getElementById('result-item-template');
@@ -437,6 +432,71 @@ class MemoryGame {
             
             resultsList.appendChild(resultItem);
         });
+        
+        this.displayBestResultsPerMode();
+    }
+    
+    getBestResultPerMode() {
+        const wins = this.getAllResults().filter(r => r.win);
+        const best = {};
+        const modes = ['common', 'attempts', 'time'];
+        const difficulties = ['easy', 'medium', 'hard'];
+        for (const mode of modes) {
+            best[mode] = {};
+            for (const difficulty of difficulties) {
+                const byModeAndDiff = wins.filter(r => r.mode === mode && r.difficulty === difficulty);
+                if (byModeAndDiff.length === 0) continue;
+                let chosen;
+                if (mode === 'time') {
+                    chosen = byModeAndDiff.reduce((a, b) => (a.time >= b.time ? a : b));
+                } else if (mode === 'attempts') {
+                    chosen = byModeAndDiff.reduce((a, b) => (a.attempts <= b.attempts ? a : b));
+                } else {
+                    chosen = byModeAndDiff.reduce((a, b) => (a.time <= b.time ? a : b));
+                }
+                best[mode][difficulty] = chosen;
+            }
+        }
+        return best;
+    }
+    
+    displayBestResultsPerMode() {
+        const container = document.getElementById('best-per-mode-list');
+        if (!container) return;
+        
+        container.innerHTML = '';
+        const best = this.getBestResultPerMode();
+        const modeNames = { common: 'Обычный', attempts: 'На попытки', time: 'На время' };
+        const difficultyNames = { easy: 'Легкий', medium: 'Средний', hard: 'Сложный' };
+        
+        let hasAny = false;
+        for (const mode of ['common', 'attempts', 'time']) {
+            for (const difficulty of ['easy', 'medium', 'hard']) {
+                const r = best[mode]?.[difficulty];
+                if (!r) continue;
+                hasAny = true;
+                const timeStr = `${Math.floor(r.time / 60)}:${(r.time % 60).toString().padStart(2, '0')}`;
+                const diff = difficultyNames[difficulty] || difficulty;
+                
+                const item = document.createElement('div');
+                item.className = 'best_per_mode_item base_text';
+                let text = `${modeNames[mode]} (${diff}): `;
+                if (mode === 'time') {
+                    text += `осталось ${timeStr}`;
+                } else {
+                    text += `${r.attempts} попыток, ${timeStr}`;
+                }
+                item.textContent = text;
+                container.appendChild(item);
+            }
+        }
+        
+        if (!hasAny) {
+            const empty = document.createElement('div');
+            empty.className = 'best_per_mode_empty base_text';
+            empty.textContent = 'Сыграйте и выиграйте в любом режиме — здесь появится ваш лучший результат.';
+            container.appendChild(empty);
+        }
     }
     
     showGameView() {
@@ -558,16 +618,15 @@ class MemoryGame {
     }
 }
 
-let gameInstance = null;
-
 document.addEventListener('DOMContentLoaded', function() {
-    gameInstance = new MemoryGame();
+    const gameInstance = new MemoryGame();
     gameInstance.displayResults();
     
     const gameModeSelector = document.querySelector('[data-selector="game-mode"]');
     if (gameModeSelector) {
         gameModeSelector.addEventListener('change', function() {
             if (gameInstance) {
+                gameInstance.userHasSelectedMode = true;
                 gameInstance.updateMainMenuCounters();
                 gameInstance.updateStartButton();
                 gameInstance.displayResults();
@@ -579,6 +638,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (difficultySelector) {
         difficultySelector.addEventListener('change', function() {
             if (gameInstance) {
+                gameInstance.userHasSelectedDifficulty = true;
                 gameInstance.updateMainMenuCounters();
                 gameInstance.updateStartButton();
                 gameInstance.displayResults();
@@ -589,20 +649,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const startButton = document.getElementById('start-game');
     if (startButton) {
         startButton.addEventListener('click', function() {
-            const gameModeSelector = document.querySelector('[data-selector="game-mode"]');
-            const difficultySelector = document.querySelector('[data-selector="difficulty"]');
-            
-            const gameModeValue = gameModeSelector.querySelector('.list_selector-value').textContent;
-            const difficultyValue = difficultySelector.querySelector('.list_selector-value').textContent;
-            
-            let mode = 'common';
-            if (gameModeValue === 'На попытки') mode = 'attempts';
-            else if (gameModeValue === 'На время') mode = 'time';
-            
-            let difficulty = 'easy';
-            if (difficultyValue === 'Средний') difficulty = 'medium';
-            else if (difficultyValue === 'Сложный') difficulty = 'hard';
-            
+            const mode = gameInstance.getSelectedGameMode();
+            const difficulty = gameInstance.getSelectedDifficulty();
             gameInstance.startGame(mode, difficulty);
         });
     }
@@ -627,49 +675,27 @@ document.addEventListener('DOMContentLoaded', function() {
     
     const closeModalBtn = document.querySelector('.modal_close');
     const modalOverlay = document.querySelector('.modal_overlay');
-    
-    if (closeModalBtn) {
-        closeModalBtn.addEventListener('click', function() {
-            if (modalOverlay) {
-                modalOverlay.classList.remove('active');
-            }
-            const modal = document.querySelector('.result_modal');
-            if (modal) {
-                modal.classList.remove('active');
-            }
-            
-            const mainMenu = document.querySelector('.main_menu_container');
-            const gameView = document.querySelector('.game_container');
-            
-            if (mainMenu) mainMenu.style.display = 'flex';
-            if (gameView) gameView.style.display = 'none';
-            
-            if (gameInstance) {
-                gameInstance.reset();
-                gameInstance.displayResults();
-            }
-        });
+    const resultModal = document.querySelector('.result_modal');
+    const mainMenuEl = document.querySelector('.main_menu_container');
+    const gameViewEl = document.querySelector('.game_container');
+
+    function closeModalAndReturnToMenu() {
+        if (modalOverlay) modalOverlay.classList.remove('active');
+        if (resultModal) resultModal.classList.remove('active');
+        if (mainMenuEl) mainMenuEl.style.display = 'flex';
+        if (gameViewEl) gameViewEl.style.display = 'none';
+        gameInstance.reset();
+        gameInstance.displayResults();
     }
-    
+
+    if (closeModalBtn) {
+        closeModalBtn.addEventListener('click', closeModalAndReturnToMenu);
+    }
+
     if (modalOverlay) {
         modalOverlay.addEventListener('click', function(e) {
             if (e.target === modalOverlay) {
-                modalOverlay.classList.remove('active');
-                const modal = document.querySelector('.result_modal');
-                if (modal) {
-                    modal.classList.remove('active');
-                }
-                
-                const mainMenu = document.querySelector('.main_menu_container');
-                const gameView = document.querySelector('.game_container');
-                
-                if (mainMenu) mainMenu.style.display = 'flex';
-                if (gameView) gameView.style.display = 'none';
-                
-                if (gameInstance) {
-                    gameInstance.reset();
-                    gameInstance.displayResults();
-                }
+                closeModalAndReturnToMenu();
             }
         });
     }

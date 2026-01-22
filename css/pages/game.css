@@ -56,19 +56,22 @@
     padding: 20px;
 }
 
-.cards_grid.easy {
+.cards_grid.easy,
+.cards_grid.medium {
     grid-template-columns: repeat(4, 1fr);
-    max-width: 600px;
+}
+
+.cards_grid.easy {
+    max-width: min(600px, 100%);
 }
 
 .cards_grid.medium {
-    grid-template-columns: repeat(4, 1fr);
-    max-width: 700px;
+    max-width: min(700px, 100%);
 }
 
 .cards_grid.hard {
     grid-template-columns: repeat(6, 1fr);
-    max-width: 900px;
+    max-width: min(900px, 100%);
 }
 
 .game_card {
@@ -87,6 +90,8 @@
 .card_front,
 .card_back {
     position: absolute;
+    top: 0;
+    left: 0;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -95,7 +100,7 @@
     height: 100%;
     border: 3px solid var(--color-border-gold);
     border-radius: 12px;
-    transition: transform 0.6s;
+    transition: transform 0.3s;
     backface-visibility: hidden;
 }
 
@@ -125,6 +130,12 @@
     border-color: var(--color-border-red);
     color: var(--color-text-light);
     background-color: var(--color-match);
+}
+
+@media (max-width: 900px) {
+    .cards_grid.hard {
+        grid-template-columns: repeat(4, 1fr);
+    }
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -184,6 +195,11 @@
     
     .game_controls .base_button {
         width: 100%;
+    }
+    
+    .game_card {
+        min-width: 90px;
+        min-height: 90px;
     }
     
     .card_back {

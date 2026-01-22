@@ -20,7 +20,7 @@
     font-style: normal;
 }
 
-.h3_text {
+.h2_text {
     color: var(--color-text-light);
     font-family: 'Unbounded', sans-serif;
     font-weight: normal;
@@ -33,7 +33,7 @@
         font-size: 36px;
     }
     
-    .h3_text {
+    .h2_text {
         font-size: 24px;
     }
     
@@ -47,7 +47,7 @@
         font-size: 28px;
     }
     
-    .h3_text {
+    .h2_text {
         font-size: 20px;
     }
     

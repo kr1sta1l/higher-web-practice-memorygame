@@ -1,4 +1,4 @@
-header {
+.game_header {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -6,7 +6,7 @@ header {
 }
 
 @media (max-width: 480px) {
-    header {
+    .game_header {
         padding: 10px;
     }
 }
