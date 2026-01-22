@@ -1,39 +1,39 @@
 <!DOCTYPE html>
 <html lang="ru">
   <head>
-    <meta charset="UTF-8" />
+    <meta charset="UTF-8"/>
     <meta
       name="viewport"
-      content="width=device-width, initial-scale=1.0" />
+      content="width=device-width, initial-scale=1.0"/>
     <title>Поиск подарков</title>
     <link
       rel="stylesheet"
-      href="./css/normalize.css" />
-    <link rel="stylesheet" href="./css/typography.css" />
-    <link rel="stylesheet" href="./css/common.css" />
-    <link rel="stylesheet" href="./css/variables.css" />
-    <link rel="stylesheet" href="./css/components/header.css" />
-    <link rel="stylesheet" href="./css/components/list_selector.css" />
-    <link rel="stylesheet" href="./css/pages/main_menu.css" />
-    <link rel="stylesheet" href="./css/pages/game.css" />
-    <link rel="stylesheet" href="./css/components/buttons.css" />
-    <link rel="stylesheet" href="./css/components/modal.css" />
+      href="./css/normalize.css"/>
+    <link rel="stylesheet" href="./css/typography.css"/>
+    <link rel="stylesheet" href="./css/common.css"/>
+    <link rel="stylesheet" href="./css/variables.css"/>
+    <link rel="stylesheet" href="./css/components/header.css"/>
+    <link rel="stylesheet" href="./css/components/list_selector.css"/>
+    <link rel="stylesheet" href="./css/pages/main_menu.css"/>
+    <link rel="stylesheet" href="./css/pages/game.css"/>
+    <link rel="stylesheet" href="./css/components/buttons.css"/>
+    <link rel="stylesheet" href="./css/components/modal.css"/>
     <script src="./js/components/list_selector.js" defer></script>
-    <script type="module" src="./js/game.js" defer></script>
+    <script type="module" src="./js/game.js"></script>
   </head>
   <body>
-    <header>
+    <header class="game_header">
       <h1 class="h1_text">Поиск подарков</h1>
     </header>
     <main>
       <div class="content_container main_menu_container">
         <div class="settings_container">
           <div class="game-mode-select settings_container_item">
-            <h3 class="h3_text">Режим игры</h3>
+            <h2 class="h2_text">Режим игры</h2>
             <div class="selector_with_counter">
               <div class="list_selector_wrapper">
                 <div class="list_selector" data-selector="game-mode">
-                  <span class="list_selector-value base_text">Обычный</span>
+                  <span class="list_selector-value base_text">---</span>
                   <span class="list_selector_arrow base_text">▼</span>
                 </div>
                 <div class="list_selector_dropdown" data-dropdown="game-mode">
@@ -46,10 +46,10 @@
             </div>
           </div>
           <div class="difficulty-select settings_container_item">
-            <h3 class="h3_text">Уровень сложности</h3>
+            <h2 class="h2_text">Уровень сложности</h2>
             <div class="list_selector_wrapper">
               <div class="list_selector" data-selector="difficulty">
-                <span class="list_selector-value base_text">Легкий</span>
+                <span class="list_selector-value base_text">---</span>
                 <span class="list_selector_arrow base_text">▼</span>
               </div>
               <div class="list_selector_dropdown" data-dropdown="difficulty">
@@ -61,10 +61,14 @@
           </div>
         </div>
         <div class="start_game_container">
-          <button id="start-game" class="base_text base_button">Начать игру</button>
+          <button id="start-game" class="base_text base_button" disabled>Начать игру</button>
+        </div>
+        <div class="best_per_mode_container">
+          <h2 class="h2_text">Лучшие результаты</h2>
+          <div class="best_per_mode_list" id="best-per-mode-list"></div>
         </div>
         <div class="results_container">
-          <h3 class="h3_text">Лучшие результаты</h3>
+          <h2 class="h2_text">Лучшие результаты режима</h2>
           <div class="results_list" id="results-list">
             <div class="no_results base_text">Пока нет результатов</div>
           </div>

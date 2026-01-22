@@ -1,6 +1,31 @@
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
 body {
     min-height: 100vh;
     background-color: var(--color-bg-primary);
+}
+
+@media (max-width: 768px) {
+    body {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+    }
+
+    .game_header {
+        flex-shrink: 0;
+    }
+
+    main {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        min-height: 0;
+    }
 }
 
 .content_container {

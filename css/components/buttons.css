@@ -7,6 +7,8 @@
     background-color: var(--color-accent-gold);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
     cursor: pointer;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
 }
 
 
@@ -22,9 +24,16 @@
     background-color: var(--color-accent-gold);
 }
 
-.base_button {
-    touch-action: manipulation;
-    -webkit-tap-highlight-color: transparent;
+.base_button:disabled {
+    opacity: 0.5;
+    transform: none;
+    cursor: not-allowed;
+}
+
+.base_button:disabled:hover {
+    box-shadow: none;
+    background-color: var(--color-accent-gold);
+    transform: none;
 }
 
 @media (max-width: 480px) {
